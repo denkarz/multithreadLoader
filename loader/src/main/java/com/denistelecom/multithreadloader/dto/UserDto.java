@@ -11,8 +11,6 @@ import java.util.UUID;
 @Accessors(chain = true)
 public class UserDto {
     private UUID id;
-    private MultilingualField firstName;
-    private MultilingualField lastName;
-    private MultilingualField middleName;
+    private MultilingualField fullName;
     private Integer age;
 }

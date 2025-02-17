@@ -1,6 +1,7 @@
 package com.denistelecom.multithreadloader.service;
 
 import com.denistelecom.multithreadloader.dto.UserDto;
+import com.denistelecom.multithreadloader.mapper.UserMapper;
 import com.denistelecom.multithreadloader.model.User;
 import com.denistelecom.multithreadloader.repository.UserRepository;
 import com.denistelecom.multithreadloader.utils.LanguageEnum;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,37 +22,34 @@ import java.util.UUID;
 @Slf4j
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
-//    private final UserMapper mapper;
+    private final UserMapper mapper;
 
     @Override
     public Page<UserDto> readAll(Pageable pageable) {
         Page<User> users = repository.findAll(pageable);
-//        return new PageImpl<>(mapper.fromEntityList(users.getContent()), pageable, users.getTotalElements());
-        return null;
+        return new PageImpl<>(mapper.fromEntityList(users.getContent()), pageable, users.getTotalElements());
     }
 
     @Override
     public Optional<UserDto> read(UUID id) {
-//        return repository.findById(id).map(mapper::fromEntity);
-        return null;
+        return repository.findById(id).map(mapper::fromEntity);
     }
 
     @Override
     public UserDto create(UserDto user) {
         UUID id = UUID.randomUUID();
-        MultilingualField firstName = new MultilingualField();
-        firstName.put(LanguageEnum.ENG,"first_name");
-        MultilingualField lastName = new MultilingualField();
-        lastName.put(LanguageEnum.ENG,"last_name");
-
-        User userdb = new User().setId(id).setAge(29).setFirstName(firstName).setLastName(lastName);
-        repository.save(userdb);
-        return new UserDto().setId(id).setAge(29).setFirstName(firstName).setLastName(lastName);
+        User userForCreate = mapper.toEntity(user);
+        userForCreate.setId(id);
+        User save = repository.save(userForCreate);
+        return mapper.fromEntity(save);
     }
 
     @Override
     public UserDto update(UserDto user) {
-        return null;
+        User userFromDb = repository.findById(user.getId()).orElseThrow();
+        user.setId(userFromDb.getId());
+        User userAfterSave = repository.save(mapper.toEntity(user));
+        return mapper.fromEntity(userAfterSave);
     }
 
     @Override

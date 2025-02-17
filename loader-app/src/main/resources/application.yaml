@@ -4,6 +4,7 @@ spring:
     password: temp_db
     url: jdbc:postgresql://localhost:5432/temp_db
     username: temp_db
+    driver-class-name: org.postgresql.Driver
 management:
   server:
     port: 8090
