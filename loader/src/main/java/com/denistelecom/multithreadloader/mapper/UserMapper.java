@@ -5,6 +5,7 @@ import com.denistelecom.multithreadloader.model.User;
 import com.denistelecom.multithreadloader.utils.LanguageEnum;
 import com.denistelecom.multithreadloader.utils.MultilingualField;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.springframework.beans.BeanUtils;
 
@@ -12,14 +13,27 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING
-//        uses = {
-//        UserMapperImpl.class
-//}
-)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
+        uses = {
+        UserMapperUtils.class
+})
 public interface UserMapper {
-    User toEntity(UserDto user);
-
+    default  User toEntity(UserDto user) {
+        User result = new User();
+        BeanUtils.copyProperties(user, result);
+        result.setFirstName(new MultilingualField());
+        result.setLastName(new MultilingualField());
+        result.setMiddleName(new MultilingualField());
+        for (Map.Entry<LanguageEnum, String> entry :user.getFullName().entrySet()) {
+            List<String> values = new ArrayList(Arrays.asList(entry.getValue().split(" ")));
+            values.addAll(List.of("","",""));
+            result.getLastName().put(entry.getKey(),!"".equals(values.get(0))&&values.get(0)!=null?values.get(0):null);
+            result.getFirstName().put(entry.getKey(),!"".equals(values.get(1))&&values.get(1)!=null?values.get(1):null);
+            result.getMiddleName().put(entry.getKey(),!"".equals(values.get(2))&&values.get(2)!=null?values.get(2):null);
+        }
+        return result;
+    };
+//    @Mapping( qualifiedByName = {"UserMapperUtil", "fromEntity"})
     default UserDto fromEntity(User user) {
         UserDto result = new UserDto();
         BeanUtils.copyProperties(user, result);

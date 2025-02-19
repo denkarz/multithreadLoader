@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,16 +39,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(UserDto user) {
         UUID id = UUID.randomUUID();
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         User userForCreate = mapper.toEntity(user);
         userForCreate.setId(id);
+        userForCreate.setCreatedAt(now);
+        userForCreate.setUpdatedAt(now);
+        userForCreate.setDeletedAt(null);
         User save = repository.save(userForCreate);
         return mapper.fromEntity(save);
     }
 
     @Override
     public UserDto update(UserDto user) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
         User userFromDb = repository.findById(user.getId()).orElseThrow();
         user.setId(userFromDb.getId());
+        user.setUpdatedAt(now);
         User userAfterSave = repository.save(mapper.toEntity(user));
         return mapper.fromEntity(userAfterSave);
     }

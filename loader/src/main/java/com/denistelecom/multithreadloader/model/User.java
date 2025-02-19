@@ -15,6 +15,7 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Type;
 
+import java.sql.Timestamp;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,5 +41,11 @@ public class User {
     private MultilingualField middleName;
     @Column
     private Integer age;
+    @Column
+    private Timestamp createdAt;
+    @Column
+    private Timestamp updatedAt;
+    @Column
+    private Timestamp deletedAt;
 
 }

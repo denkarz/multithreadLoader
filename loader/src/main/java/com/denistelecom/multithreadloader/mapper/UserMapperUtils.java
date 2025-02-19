@@ -3,9 +3,9 @@
 //import lombok.RequiredArgsConstructor;
 //import org.mapstruct.Named;
 //import org.springframework.stereotype.Component;
-//
-//@Named("UserMapperImpl")
+
+//@Named("UserMapperUtils")
 //@Component
 //@RequiredArgsConstructor
-//public class UserMapperImpl {
+//public class UserMapperUtils {
 //}
